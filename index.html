@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Master</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Combined CSS from previous implementations */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --success: #42e695;
+            --warning: #ff8e53;
+            --danger: #ff6b6b;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --white: #ffffff;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--dark), var(--primary));
+            color: var(--white);
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+            color: #4cc9f0;
+        }
+        
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .main-content {
+            display: flex;
+            min-height: 600px;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            border-right: 1px solid #eee;
+            padding: 25px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-section {
+            margin-bottom: 30px;
+        }
+        
+        .nav-title {
+            padding: 0 25px 10px;
+            font-size: 14px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            gap: 12px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(106, 17, 203, 0.08);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            background: #f9fbfd;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+        }
+        
+        .deck-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .deck {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .deck:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .deck-header {
+            padding: 20px;
+            color: var(--white);
+            position: relative;
+        }
+        
+        .deck-1 .deck-header { background: linear-gradient(to right, var(--danger), var(--warning)); }
+        .deck-2 .deck-header { background: linear-gradient(to right, var(--primary), #00f2fe); }
+        .deck-3 .deck-header { background: linear-gradient(to right, var(--success), #3bb2b8); }
+        .deck-4 .deck-header { background: linear-gradient(to right, #ff9a9e, #fad0c4); }
+        
+        .deck-icon {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .deck-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .deck-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .deck-info {
+            padding: 20px;
+            background: var(--light);
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .deck-1 .progress-fill { background: var(--danger); width: 65%; }
+        .deck-2 .progress-fill { background: var(--primary); width: 40%; }
+        .deck-3 .progress-fill { background: var(--success); width: 85%; }
+        .deck-4 .progress-fill { background: #ff9a9e; width: 30%; }
+        
+        .deck-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 15px;
+        }
+        
+        .new-card {
+            background: var(--light);
+            border: 2px dashed #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .new-card:hover {
+            background: #e9ecef;
+            border-color: var(--primary);
+        }
+        
+        .new-card i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .new-card h3 {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--white);
+            font-size: 24px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+        
+        /* Flashcard Styles */
+        .flashcard-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            perspective: 1000px;
+            margin-bottom: 40px;
+        }
+        
+        .flashcard {
+            width: 500px;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+        }
+        
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+        }
+        
+        .flashcard-back {
+            background: var(--white);
+            color: #333;
+            transform: rotateY(180deg);
+        }
+        
+        .card-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .card-content {
+            font-size: 20px;
+            line-height: 1.6;
+        }
+        
+        .hint {
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: var(--white);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--success), #3bb2b8);
+            color: var(--white);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, var(--warning), #ff6b6b);
+            color: var(--white);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Review Section */
+        .review-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 150px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* Authentication screens */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 20px;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid #eee;
+        }
+        
+        .auth-tab.active {
+            border-bottom: 3px solid #6a11cb;
+            color: #6a11cb;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .auth-error {
+            color: #ff6b6b;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .deck-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .flashcard {
+                width: 90%;
+                height: 280px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .stats {
+                display: none;
+            }
+            
+            .deck-container {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .flashcard {
+                height: 250px;
+            }
+            
+            .card-content {
+                font-size: 18px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .review-stats {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Screen -->
+    <div id="auth-screen" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="signup">Sign Up</div>
+            </div>
+            
+            <form id="login-form" class="auth-form active">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit" class="auth-btn">Login</button>
+                <div class="auth-error" id="login-error"></div>
+            </form>
+            
+            <form id="signup-form" class="auth-form">
+                <div class="form-group">
+                    <label for="signup-name">Name</label>
+                    <input type="text" id="signup-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm">Confirm Password</label>
+                    <input type="password" id="signup-confirm" required>
+                </div>
+                <button type="submit" class="auth-btn">Create Account</button>
+                <div class="auth-error" id="signup-error"></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Main App (initially hidden) -->
+    <div id="app-container" style="display:none;">
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <i class="fas fa-layer-group"></i>
+                    <h1>Flashcard Master</h1>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <i class="fas fa-book"></i>
+                        <span id="total-decks">4 Decks</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-sticky-note"></i>
+                        <span id="total-cards">287 Cards</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="mastered-cards">132 Mastered</span>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="main-content">
+                <div class="sidebar">
+                    <div class="nav-section">
+                        <div class="nav-title">Navigation</div>
+                        <div class="nav-item active">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-book"></i>
+                            <span>My Decks</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-history"></i>
+                            <span>Review</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Statistics</span>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-section">
+                        <div class="nav-title">My Decks</div>
+                        <div class="nav-item">
+                            <i class="fas fa-language"></i>
+                            <span>Spanish Vocabulary</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-atom"></i>
+                            <span>Chemistry Basics</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-code"></i>
+                            <span>JavaScript Concepts</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-landmark"></i>
+                            <span>World History</span>
+                        </div>
+                    </div>
+                    
+                    <div class="nav-section">
+                        <div class="nav-title">Tools</div>
+                        <div class="nav-item">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Create New Deck</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </div>
+                        <div class="nav-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Help & Support</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-area">
+                    <h2 class="section-title">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </h2>
+                    
+                    <div class="review-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="due-count">15</div>
+                            <div class="stat-label">Cards Due</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="mastery-rate">87%</div>
+                            <div class="stat-label">Mastery Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="streak-days">32</div>
+                            <div class="stat-label">Streak Days</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title">
+                        <i class="fas fa-book"></i>
+                        Active Decks
+                    </h3>
+                    
+                    <div class="deck-container" id="deck-container">
+                        <!-- Decks will be populated by JavaScript -->
+                    </div>
+                    
+                    <h3 class="section-title" style="margin-top: 40px;">
+                        <i class="fas fa-sync-alt"></i>
+                        Review Session
+                    </h3>
+                    
+                    <div class="flashcard-container">
+                        <div class="flashcard" id="flashcard">
+                            <div class="flashcard-front">
+                                <div class="card-title">Question</div>
+                                <div class="card-content" id="question">What is the capital of France?</div>
+                                <div class="hint">Click to flip the card</div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div class="card-title">Answer</div>
+                                <div class="card-content" id="answer">The capital of France is Paris</div>
+                                <div class="hint" style="color: #999;">Click to flip back</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="btn btn-warning" id="again-btn">
+                            <i class="fas fa-times"></i> Again
+                        </button>
+                        <button class="btn" id="hard-btn">
+                            <i class="fas fa-redo"></i> Hard
+                        </button>
+                        <button class="btn btn-primary" id="good-btn">
+                            <i class="fas fa-check"></i> Good
+                        </button>
+                        <button class="btn btn-success" id="easy-btn">
+                            <i class="fas fa-star"></i> Easy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="floating-btn" id="floating-btn">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <script>
+        // Flashcard class with SM-2 algorithm
+        class Flashcard {
+            constructor(question, answer) {
+                this.question = question;
+                this.answer = answer;
+                this.interval = 0;
+                this.repetition = 0;
+                this.easeFactor = 2.5;
+                this.dueDate = new Date();
+            }
+
+            updateCard(quality) {
+                if (quality < 3) {
+                    this.repetition = 0;
+                    this.interval = 1;
+                } else {
+                    if (this.repetition === 0) {
+                        this.interval = 1;
+                    } else if (this.repetition === 1) {
+                        this.interval = 6;
+                    } else {
+                        this.interval = Math.round(this.interval * this.easeFactor);
+                    }
+                    
+                    this.repetition++;
+                }
+
+                this.easeFactor = Math.max(1.3, 
+                    this.easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+                );
+
+                const nextDate = new Date();
+                nextDate.setDate(nextDate.getDate() + this.interval);
+                this.dueDate = nextDate;
+                
+                return this;
+            }
+        }
+
+        // Auth service
+        class AuthService {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('flashcard_users')) || [];
+                this.currentUser = null;
+            }
+            
+            signUp(name, email, password) {
+                if (this.users.some(user => user.email === email)) {
+                    return { success: false, message: "Email already registered" };
+                }
+                
+                const newUser = {
+                    id: Date.now().toString(),
+                    name,
+                    email,
+                    password,
+                    createdAt: new Date().toISOString()
+                };
+                
+                this.users.push(newUser);
+                localStorage.setItem('flashcard_users', JSON.stringify(this.users));
+                
+                return { success: true, user: newUser };
+            }
+            
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                if (!user) {
+                    return { success: false, message: "Invalid email or password" };
+                }
+                
+                this.currentUser = user;
+                localStorage.setItem('current_user', JSON.stringify(user));
+                return { success: true, user };
+            }
+            
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('current_user');
+            }
+        }
+
+        // Data service
+        class DataService {
+            constructor() {
+                this.decks = JSON.parse(localStorage.getItem('flashcard_decks')) || [];
+                this.cards = JSON.parse(localStorage.getItem('flashcard_cards')) || [];
+            }
+            
+            createDeck(userId, name, description) {
+                const newDeck = {
+                    id: `deck_${Date.now()}`,
+                    userId,
+                    name,
+                    description,
+                    createdAt: new Date().toISOString()
+                };
+                
+                this.decks.push(newDeck);
+                this.saveData();
+                return newDeck;
+            }
+            
+            getDecksForUser(userId) {
+                return this.decks.filter(deck => deck.userId === userId);
+            }
+            
+            createCard(deckId, question, answer) {
+                const newCard = new Flashcard(question, answer);
+                newCard.id = `card_${Date.now()}`;
+                newCard.deckId = deckId;
+                newCard.createdAt = new Date().toISOString();
+                
+                this.cards.push(newCard);
+                this.saveData();
+                return newCard;
+            }
+            
+            getCardsForDeck(deckId) {
+                return this.cards.filter(card => card.deckId === deckId);
+            }
+            
+            saveData() {
+                localStorage.setItem('flashcard_decks', JSON.stringify(this.decks));
+                localStorage.setItem('flashcard_cards', JSON.stringify(this.cards));
+            }
+        }
+
+        // Initialize services
+        const authService = new AuthService();
+        const dataService = new DataService();
+
+        // DOM Elements
+        const authScreen = document.getElementById('auth-screen');
+        const appContainer = document.getElementById('app-container');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const deckContainer = document.getElementById('deck-container');
+        const flashcard = document.getElementById('flashcard');
+        const questionEl = document.getElementById('question');
+        const answerEl = document.getElementById('answer');
+        const dueCountEl = document.getElementById('due-count');
+        const masteryRateEl = document.getElementById('mastery-rate');
+        const streakDaysEl = document.getElementById('streak-days');
+        const totalDecksEl = document.getElementById('total-decks');
+        const totalCardsEl = document.getElementById('total-cards');
+        const masteredCardsEl = document.getElementById('mastered-cards');
+        
+        // Review buttons
+        const againBtn = document.getElementById('again-btn');
+        const hardBtn = document.getElementById('hard-btn');
+        const goodBtn = document.getElementById('good-btn');
+        const easyBtn = document.getElementById('easy-btn');
+        
+        // Current review state
+        let currentCardIndex = 0;
+        let reviewCards = [
+            new Flashcard("What is the chemical symbol for Gold?", "Au"),
+            new Flashcard("What does HTML stand for?", "HyperText Markup Language"),
+            new Flashcard("Who painted the Mona Lisa?", "Leonardo da Vinci"),
+            new Flashcard("What is the largest planet in our solar system?", "Jupiter")
+        ];
+
+        // Switch between login/signup tabs
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelector('.auth-tab.active').classList.remove('active');
+                document.querySelector('.auth-form.active').classList.remove('active');
+                
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-form`).classList.add('active');
+            });
+        });
+
+        // Handle login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            const result = authService.login(email, password);
+            
+            if (result.success) {
+                showMainApp();
+            } else {
+                document.getElementById('login-error').textContent = result.message;
+                document.getElementById('login-error').style.display = 'block';
+            }
+        });
+
+        // Handle signup
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+            
+            if (password !== confirm) {
+                document.getElementById('signup-error').textContent = "Passwords don't match";
+                document.getElementById('signup-error').style.display = 'block';
+                return;
+            }
+            
+            const result = authService.signUp(name, email, password);
+            
+            if (result.success) {
+                authService.login(email, password);
+                showMainApp();
+            } else {
+                document.getElementById('signup-error').textContent = result.message;
+                document.getElementById('signup-error').style.display = 'block';
+            }
+        });
+
+        // Show main app after login
+        function showMainApp() {
+            authScreen.style.display = 'none';
+            appContainer.style.display = 'block';
+            
+            // Initialize app with user data
+            initApp();
+        }
+
+        // Check if user is already logged in
+        function checkAuthStatus() {
+            const currentUser = JSON.parse(localStorage.getItem('current_user'));
+            if (currentUser) {
+                authService.currentUser = currentUser;
+                showMainApp();
+            }
+        }
+
+        // Initialize the app
+        function initApp() {
+            const userId = authService.currentUser.id;
+            
+            // Create demo decks if none exist
+            if (dataService.getDecksForUser(userId).length === 0) {
+                dataService.createDeck(userId, "Spanish Vocabulary", "Essential words and phrases");
+                dataService.createDeck(userId, "Chemistry Basics", "Elements and reactions");
+                dataService.createDeck(userId, "JavaScript Concepts", "Advanced programming");
+            }
+            
+            // Load user's decks
+            const userDecks = dataService.getDecksForUser(userId);
+            
+            // Render decks to UI
+            renderDecks(userDecks);
+            
+            // Update stats
+            updateStats();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Start with first card
+            showNextCard();
+        }
+
+        // Render decks to the UI
+        function renderDecks(decks) {
+            deckContainer.innerHTML = '';
+            
+            const colors = ['deck-1', 'deck-2', 'deck-3', 'deck-4'];
+            const icons = ['fa-language', 'fa-atom', 'fa-code', 'fa-landmark'];
+            
+            decks.forEach((deck, index) => {
+                const deckElement = document.createElement('div');
+                deckElement.className = `deck ${colors[index % colors.length]}`;
+                
+                const cardCount = dataService.getCardsForDeck(deck.id).length;
+                
+                deckElement.innerHTML = `
+                    <div class="deck-header">
+                        <div class="deck-icon">
+                            <i class="fas ${icons[index % icons.length]}"></i>
+                        </div>
+                        <h2 class="deck-title">${deck.name}</h2>
+                        <p class="deck-subtitle">${deck.description || 'No description'}</p>
+                    </div>
+                    <div class="deck-info">
+                        <div class="progress-container">
+                            <div class="progress-text">
+                                <span>Mastery</span>
+                                <span>${Math.floor(Math.random() * 100)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${Math.floor(Math.random() * 100)}%"></div>
+                            </div>
+                        </div>
+                        <div class="deck-meta">
+                            <div class="cards-count">
+                                <i class="fas fa-sticky-note"></i> ${cardCount} cards
+                            </div>
+                            <div class="due-count">
+                                <i class="fas fa-clock"></i> ${Math.floor(Math.random() * 20)} due
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                deckElement.addEventListener('click', () => {
+                    alert(`Opening deck: ${deck.name}\n\nThis would show all cards in the deck in a full implementation.`);
+                });
+                
+                deckContainer.appendChild(deckElement);
+            });
+            
+            // Add new deck button
+            const newDeckElement = document.createElement('div');
+            newDeckElement.className = 'new-card';
+            newDeckElement.innerHTML = `
+                <i class="fas fa-plus-circle"></i>
+                <h3>Create New Deck</h3>
+            `;
+            newDeckElement.addEventListener('click', showCreateDeckModal);
+            deckContainer.appendChild(newDeckElement);
+        }
+
+        // Show create deck modal
+        function showCreateDeckModal() {
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            modal.style.display = 'flex';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+            modal.style.zIndex = '1000';
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px;">
+                    <h2 style="margin-bottom: 20px;">Create New Deck</h2>
+                    <div class="form-group">
+                        <label>Deck Name</label>
+                        <input type="text" id="new-deck-name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Description (optional)</label>
+                        <textarea id="new-deck-desc" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                        <button id="cancel-deck" style="padding: 10px 20px; background: #eee; border: none; border-radius: 5px;">Cancel</button>
+                        <button id="save-deck" style="padding: 10px 20px; background: #6a11cb; color: white; border: none; border-radius: 5px;">Create Deck</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('cancel-deck').addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+            
+            document.getElementById('save-deck').addEventListener('click', () => {
+                const name = document.getElementById('new-deck-name').value;
+                const desc = document.getElementById('new-deck-desc').value;
+                
+                if (!name) {
+                    alert('Please enter a deck name');
+                    return;
+                }
+                
+                const newDeck = dataService.createDeck(
+                    authService.currentUser.id, 
+                    name, 
+                    desc
+                );
+                
+                // Refresh decks display
+                const decks = dataService.getDecksForUser(authService.currentUser.id);
+                renderDecks(decks);
+                
+                document.body.removeChild(modal);
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const userId = authService.currentUser.id;
+            const decks = dataService.getDecksForUser(userId);
+            let totalCards = 0;
+            
+            decks.forEach(deck => {
+                totalCards += dataService.getCardsForDeck(deck.id).length;
+            });
+            
+            totalDecksEl.textContent = `${decks.length} Decks`;
+            totalCardsEl.textContent = `${totalCards} Cards`;
+            masteredCardsEl.textContent = `${Math.floor(totalCards * 0.65)} Mastered`;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Flashcard flip
+            flashcard.addEventListener('click', () => {
+                flashcard.classList.toggle('flipped');
+            });
+            
+            // Review buttons
+            againBtn.addEventListener('click', () => handleReview(0));
+            hardBtn.addEventListener('click', () => handleReview(1));
+            goodBtn.addEventListener('click', () => handleReview(2));
+            easyBtn.addEventListener('click', () => handleReview(3));
+            
+            // Floating button
+            document.getElementById('floating-btn').addEventListener('click', () => {
+                alert('Quick add new card feature would appear here.');
+            });
+        }
+
+        // Show next card in review
+        function showNextCard() {
+            flashcard.classList.remove('flipped');
+            
+            if (reviewCards.length === 0) {
+                questionEl.textContent = "Review complete!";
+                answerEl.textContent = "Great job on your review session!";
+                return;
+            }
+            
+            currentCardIndex = (currentCardIndex + 1) % reviewCards.length;
+            const card = reviewCards[currentCardIndex];
+            
+            questionEl.textContent = card.question;
+            answerEl.textContent = card.answer;
+        }
+
+        // Handle review rating
+        function handleReview(quality) {
+            // Update card with SM-2 algorithm
+            reviewCards[currentCardIndex].updateCard(quality);
+            
+            // Show notification
+            let message = "";
+            if(quality === 0) message = "Card marked as 'Again'. It will reappear soon.";
+            else if(quality === 2) message = "Card marked as 'Good'. Well done!";
+            else if(quality === 3) message = "Card marked as 'Easy'. Great job!";
+            else message = "Card marked as 'Hard'. Keep practicing!";
+            
+            showNotification(message);
+            
+            // Move to next card
+            setTimeout(() => {
+                showNextCard();
+            }, 1000);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.backgroundColor = '#333';
+            notification.style.color = 'white';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '50px';
+            notification.style.zIndex = '1000';
+            notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 2000);
+        }
+
+        // Initialize the app when page loads
+        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+</body>
+</html>
