@@ -6,7 +6,6 @@
     <title>Flashcard Master</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Combined CSS from previous implementations */
         * {
             margin: 0;
             padding: 0;
@@ -29,94 +28,102 @@
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
             min-height: 100vh;
-            padding: 20px;
             color: #333;
+            display: flex;
+            flex-direction: column;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            margin: 0;
             background: var(--white);
-            border-radius: 20px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            height: 100vh;
         }
         
         header {
             background: linear-gradient(to right, var(--dark), var(--primary));
             color: var(--white);
-            padding: 25px 30px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: relative;
+            flex-shrink: 0;
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
         
         .logo i {
-            font-size: 32px;
+            font-size: 28px;
             color: #4cc9f0;
         }
         
         .logo h1 {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
         }
         
         .stats {
             display: flex;
-            gap: 20px;
-            font-size: 16px;
+            gap: 15px;
+            font-size: 14px;
             background: rgba(255, 255, 255, 0.15);
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 50px;
         }
         
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .main-content {
             display: flex;
-            min-height: 600px;
+            flex: 1;
+            overflow: hidden;
         }
         
         .sidebar {
-            width: 280px;
+            width: 240px;
             background: var(--white);
             border-right: 1px solid #eee;
-            padding: 25px 0;
+            padding: 20px 0;
             transition: all 0.3s ease;
+            overflow-y: auto;
+            flex-shrink: 0;
         }
         
         .nav-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .nav-title {
-            padding: 0 25px 10px;
-            font-size: 14px;
+            padding: 0 20px 8px;
+            font-size: 13px;
             color: var(--gray);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 12px 25px;
-            gap: 12px;
+            padding: 10px 20px;
+            gap: 10px;
             color: #555;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
         }
         
@@ -127,23 +134,24 @@
         }
         
         .nav-item i {
-            width: 24px;
+            width: 22px;
             text-align: center;
         }
         
         .content-area {
             flex: 1;
-            padding: 30px;
+            padding: 25px;
             background: #f9fbfd;
+            overflow-y: auto;
         }
         
         .section-title {
-            font-size: 24px;
-            margin-bottom: 25px;
+            font-size: 22px;
+            margin-bottom: 20px;
             color: var(--dark);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         
         .section-title i {
@@ -152,13 +160,13 @@
         
         .deck-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
         }
         
         .deck {
             background: var(--white);
-            border-radius: 15px;
+            border-radius: 14px;
             overflow: hidden;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -167,12 +175,12 @@
         }
         
         .deck:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
         }
         
         .deck-header {
-            padding: 20px;
+            padding: 18px;
             color: var(--white);
             position: relative;
         }
@@ -183,40 +191,40 @@
         .deck-4 .deck-header { background: linear-gradient(to right, #ff9a9e, #fad0c4); }
         
         .deck-icon {
-            font-size: 28px;
-            margin-bottom: 15px;
+            font-size: 26px;
+            margin-bottom: 12px;
         }
         
         .deck-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         
         .deck-subtitle {
-            font-size: 14px;
+            font-size: 13px;
             opacity: 0.9;
         }
         
         .deck-info {
-            padding: 20px;
+            padding: 18px;
             background: var(--light);
         }
         
         .progress-container {
-            margin: 15px 0;
+            margin: 12px 0;
         }
         
         .progress-text {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 14px;
+            margin-bottom: 4px;
+            font-size: 13px;
             color: var(--gray);
         }
         
         .progress-bar {
-            height: 8px;
+            height: 7px;
             background: #e0e0e0;
             border-radius: 4px;
             overflow: hidden;
@@ -235,9 +243,9 @@
         .deck-meta {
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--gray);
-            margin-top: 15px;
+            margin-top: 12px;
         }
         
         .new-card {
@@ -247,8 +255,8 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 200px;
-            border-radius: 15px;
+            min-height: 180px;
+            border-radius: 14px;
             transition: all 0.3s ease;
             cursor: pointer;
         }
@@ -259,29 +267,30 @@
         }
         
         .new-card i {
-            font-size: 40px;
+            font-size: 36px;
             color: var(--primary);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .new-card h3 {
             color: var(--primary);
             font-weight: 600;
+            font-size: 16px;
         }
         
         .floating-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
+            bottom: 25px;
+            right: 25px;
+            width: 55px;
+            height: 55px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             color: var(--white);
-            font-size: 24px;
+            font-size: 22px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             transition: transform 0.3s ease;
@@ -297,14 +306,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 400px;
+            min-height: 350px;
             perspective: 1000px;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
         
         .flashcard {
-            width: 500px;
-            height: 300px;
+            width: 100%;
+            max-width: 500px;
+            height: 280px;
             position: relative;
             transform-style: preserve-3d;
             transition: transform 0.8s;
@@ -320,12 +330,12 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 20px;
+            border-radius: 18px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 35px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
@@ -342,19 +352,19 @@
         }
         
         .card-title {
-            font-size: 24px;
-            margin-bottom: 15px;
+            font-size: 22px;
+            margin-bottom: 12px;
             font-weight: 600;
         }
         
         .card-content {
-            font-size: 20px;
+            font-size: 18px;
             line-height: 1.6;
         }
         
         .hint {
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: 18px;
+            font-size: 13px;
             color: rgba(255, 255, 255, 0.7);
         }
         
@@ -362,20 +372,21 @@
         .controls {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
         
         .btn {
-            padding: 12px 25px;
+            padding: 10px 22px;
             border-radius: 50px;
             border: none;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             transition: all 0.3s ease;
         }
         
@@ -403,28 +414,29 @@
         .review-stats {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 25px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
         }
         
         .stat-card {
             background: var(--white);
-            padding: 20px;
-            border-radius: 15px;
+            padding: 18px;
+            border-radius: 14px;
             text-align: center;
-            min-width: 150px;
+            min-width: 140px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         .stat-value {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         
         .stat-label {
             color: var(--gray);
-            font-size: 14px;
+            font-size: 13px;
         }
         
         /* Authentication screens */
@@ -432,29 +444,29 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             padding: 20px;
         }
         
         .auth-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 18px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            padding: 40px;
+            padding: 35px;
             width: 100%;
-            max-width: 400px;
+            max-width: 380px;
         }
         
         .auth-tabs {
             display: flex;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .auth-tab {
             flex: 1;
             text-align: center;
-            padding: 15px;
+            padding: 12px;
             cursor: pointer;
             font-weight: 600;
             border-bottom: 3px solid #eee;
@@ -474,39 +486,39 @@
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 7px;
             font-weight: 500;
         }
         
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 11px 14px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
         }
         
         .auth-btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: linear-gradient(to right, #6a11cb, #2575fc);
             color: white;
             border: none;
             border-radius: 50px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         
         .auth-error {
             color: #ff6b6b;
-            margin-top: 15px;
+            margin-top: 12px;
             text-align: center;
             display: none;
         }
@@ -514,15 +526,15 @@
         /* Card management styles */
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
             margin-top: 20px;
         }
         
         .card-item {
             background: white;
             border-radius: 12px;
-            padding: 20px;
+            padding: 18px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
         
@@ -634,15 +646,18 @@
             color: white;
         }
         
-        /* Responsive */
+        /* Responsive Adjustments */
         @media (max-width: 992px) {
             .deck-container {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             }
             
             .flashcard {
-                width: 90%;
-                height: 280px;
+                height: 260px;
+            }
+            
+            .sidebar {
+                width: 200px;
             }
         }
         
@@ -655,6 +670,9 @@
                 width: 100%;
                 border-right: none;
                 border-bottom: 1px solid #eee;
+                padding: 15px 0;
+                max-height: 200px;
+                overflow-y: auto;
             }
             
             .stats {
@@ -666,37 +684,109 @@
             }
             
             header {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-                padding: 20px;
+                padding: 15px;
+            }
+            
+            .logo h1 {
+                font-size: 20px;
             }
             
             .controls {
-                flex-wrap: wrap;
+                gap: 8px;
             }
             
+            .btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .flashcard-container {
+                min-height: 300px;
+            }
+            
+            .flashcard {
+                height: 240px;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
             .review-stats {
-                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .stat-card {
+                min-width: calc(50% - 12px);
+            }
+            
+            .auth-card {
+                padding: 25px;
+            }
+            
+            .flashcard {
+                height: 220px;
+            }
+            
+            .card-content {
+                font-size: 16px;
+            }
+            
+            .btn {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+            
+            .floating-btn {
+                bottom: 15px;
+                right: 15px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .view-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .btn-add {
+                width: 100%;
+                justify-content: center;
             }
         }
         
         @media (max-width: 480px) {
+            .section-title {
+                font-size: 20px;
+            }
+            
+            .stat-card {
+                min-width: 100%;
+            }
+            
             .flashcard {
-                height: 250px;
+                height: 200px;
+            }
+            
+            .card-title {
+                font-size: 20px;
             }
             
             .card-content {
-                font-size: 18px;
+                font-size: 16px;
             }
             
-            .btn {
-                padding: 10px 15px;
+            .auth-tabs {
                 font-size: 14px;
-            }
-            
-            .review-stats {
-                flex-direction: column;
             }
         }
     </style>
@@ -1467,6 +1557,7 @@
                 const cardCount = dataService.getCardsForDeck(deck.id).length;
                 const masteredCount = deck.masteredCount || 0;
                 const masteryRate = cardCount > 0 ? Math.round((masteredCount / cardCount) * 100) : 0;
+                const dueCount = getDueCountForDeck(deck.id);
                 
                 // Dashboard deck element
                 const deckElement = document.createElement('div');
@@ -1494,7 +1585,7 @@
                                 <i class="fas fa-sticky-note"></i> ${cardCount} cards
                             </div>
                             <div class="due-count">
-                                <i class="fas fa-clock"></i> ${getDueCountForDeck(deck.id)} due
+                                <i class="fas fa-clock"></i> ${dueCount} due
                             </div>
                         </div>
                     </div>
